@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import TodoList from './TodoList';
 import AddTodoForm from './AddTodoForm';
+
 
 function useSemiPersistentState() {
   // Initialize state from localStorage if available
@@ -25,14 +27,20 @@ function App() {
   const [todoList, setTodoList] = useSemiPersistentState();
 
   const addTodo = (newTodo) => {
-    setTodoList([...todoList, newTodo]);
+    setTodoList([...todoList, { id: uuidv4(), title: newTodo.title, url: newTodo.url, due: newTodo.due }]);
+  }
+
+  const removeTodo = (id) => {
+    const updatedTodoList = todoList.filter((todo) => todo.id !== id)
+    setTodoList([updatedTodoList]);
   }
 
   return (
+    //didn't replace <div> with <> fragment syntax because I used tailwindCSS to add style
     <div className="w-full flex flex-col justify-center items-center p-10 gap-4">
       <h2 className='text-2xl font-serif font-bold'>Todo List</h2>
       <AddTodoForm onAddTodo={addTodo} />
-      <TodoList todoList={todoList} />
+      <TodoList todoList={todoList} onRemoveTodo={removeTodo} />
     </div>
   )
 }

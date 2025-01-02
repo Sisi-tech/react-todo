@@ -1,34 +1,85 @@
 import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import TodoList from './TodoList';
 import AddTodoForm from './AddTodoForm';
 
-
-function useSemiPersistentState() {
-  // Initialize state from localStorage if available
-  const [todoList, setTodoList] = useState(() => {
-    // retrieve the savedTodoList from localStorage
-    const savedTodoList = localStorage.getItem('savedTodoList');
-    // if savedTodoList exists, parse it as an array, otherwise default to an empty array
-    return savedTodoList ? JSON.parse(savedTodoList) : [];
-  });
-
-  // save the todoList to localStorage whenever it changes
-  useEffect(() => {
-    // convert todoList to a string before saving it to localStorage
-    localStorage.setItem('savedTodoList', JSON.stringify(todoList));
-  }, [todoList]);
-
-  return [todoList, setTodoList];
-}
-
+// week 8 
 function App() {
+  const [todoList, setTodoList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [todoList, setTodoList] = useSemiPersistentState();
-
-  const addTodo = (newTodo) => {
-    setTodoList([...todoList, { id: uuidv4(), title: newTodo.title, url: newTodo.url, due: newTodo.due }]);
+  const fetchData = async() => {
+    try {
+      const response = await fetch(`https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_AIRTABLE_API_TOKEN}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      } 
+      const toDosFromAPI = await response.json();
+      const toDos = toDosFromAPI.records.map((todo) => {
+        const newTodo = {
+          id: todo.id,
+          title: todo.fields.title
+        }
+        return newTodo
+      });
+      setTodoList(toDos);
+    } catch (error) {
+      console.log(error.message);
+    }
   }
+
+  const postTodo = async (todo) => {
+    try {
+      const airtableData = {
+        fields: {
+          title: todo,
+        },
+      };
+      const response = await fetch(`https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_AIRTABLE_API_TOKEN}`,
+        },
+        body: JSON.stringify(airtableData),
+      });
+      if (!response.ok) {
+        throw new Error(`Error has ocurred: ${response.status}`);
+      }
+      const dataResponse = await response.json();
+      return dataResponse;
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    fetchData().finally(() => {
+      setIsLoading(false);
+    });
+  }, [])
+
+  useEffect(() => {
+    if (!isLoading) {
+      localStorage.setItem("savedTodoList", JSON.stringify(todoList));
+    }
+  }, [todoList, isLoading]);
+
+ const addTodo = async (newTodo) => {
+  const response = await postTodo(newTodo.title);
+  if (response) {
+    const createdTodo = {
+      id: response.id,
+      title: response.fields.title,
+    };
+    setTodoList([...todoList, createdTodo]);
+  }
+ };
 
   const removeTodo = (id) => {
     const updatedTodoList = todoList.filter((todo) => todo.id !== id)
@@ -36,13 +87,20 @@ function App() {
   }
 
   return (
-    //didn't replace <div> with <> fragment syntax because I used tailwindCSS to add style
     <div className="w-full flex flex-col justify-center items-center p-10 gap-4">
       <h2 className='text-2xl font-serif font-bold'>Todo List</h2>
-      <AddTodoForm onAddTodo={addTodo} />
-      <TodoList todoList={todoList} onRemoveTodo={removeTodo} />
+      {
+        isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <AddTodoForm onAddTodo={addTodo} />
+            <TodoList todoList={todoList} onRemoveTodo={removeTodo} />
+          </>
+        )
+      }
     </div>
   )
 }
 
-export default App
+export default App;

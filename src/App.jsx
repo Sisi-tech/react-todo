@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TodoList from './TodoList';
 import AddTodoForm from './AddTodoForm';
 
@@ -87,19 +88,34 @@ function App() {
   }
 
   return (
-    <div className="w-full flex flex-col justify-center items-center p-10 gap-4">
-      <h2 className='text-2xl font-serif font-bold'>Todo List</h2>
-      {
-        isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
-            <AddTodoForm onAddTodo={addTodo} />
-            <TodoList todoList={todoList} onRemoveTodo={removeTodo} />
-          </>
-        )
-      }
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route 
+          path="/"
+          element={
+            <div className="w-full flex flex-col justify-center items-center p-10 gap-4">
+            <h2 className='text-2xl font-serif font-bold'>Todo List</h2>
+            {
+              isLoading ? (
+                <p>Loading...</p>
+              ) : (
+                <>
+                  <AddTodoForm onAddTodo={addTodo} />
+                  <TodoList todoList={todoList} onRemoveTodo={removeTodo} />
+                </>
+              )
+            }
+          </div>
+          }
+        />
+        <Route 
+          path="/new"
+          element={
+            <h1 className='bg-blue-100 text-center text-xl p-4'>New Todo List</h1>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from "./TodoListItem.module.css";
 
 const TodoListItem = ({ todo, onRemoveTodo }) => {
     if (!todo || !todo.title || !todo.due) {
@@ -6,7 +7,7 @@ const TodoListItem = ({ todo, onRemoveTodo }) => {
     }
     
     return (
-        <li className='flex justify-between items-center p-2 border-b border-gray-200'>
+        <li className={`${styles.listItem} flex justify-between items-center p-2 border-b border-gray-200`}>
         <a href={todo.url}>{todo.title}</a>
         <span>{todo.due}</span>
         <button

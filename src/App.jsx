@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TodoList from './TodoList';
 import AddTodoForm from './AddTodoForm';
+import styles from './TodoListItem.module.css';
 
 // week 8 
 function App() {
@@ -94,7 +95,7 @@ function App() {
           path="/"
           element={
             <div className="w-full flex flex-col justify-center items-center p-10 gap-4">
-            <h2 className='text-2xl font-serif font-bold'>Todo List</h2>
+            <h2 className={`${styles.heading}`}>Todo List</h2>
             {
               isLoading ? (
                 <p>Loading...</p>
@@ -111,7 +112,7 @@ function App() {
         <Route 
           path="/new"
           element={
-            <h1 className='bg-blue-100 text-center text-xl p-4'>New Todo List</h1>
+            <h1 className='bg-red-100 text-center text-xl p-4'>New Todo List</h1>
           }
         />
       </Routes>

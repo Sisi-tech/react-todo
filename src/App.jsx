@@ -11,7 +11,7 @@ function App() {
 
   const fetchData = async() => {
     try {
-      const response = await fetch(`https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`, {
+      const response = await fetch(`https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}?view=Grid%20view&sort[0][field]=Title&sort[0][direction]=asc`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${import.meta.env.VITE_AIRTABLE_API_TOKEN}`
@@ -26,8 +26,14 @@ function App() {
           id: todo.id,
           title: todo.fields.title
         }
-        return newTodo
+        return newTodo;
       });
+      toDos.sort((a, b) => {
+        if (a.title < b.title) return 1;
+        if (a.title > b.title) return -1;
+        return 0;
+      });
+
       setTodoList(toDos);
     } catch (error) {
       console.log(error.message);

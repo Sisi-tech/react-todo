@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import styles from './TodoListItem.module.css';
 
 function InputWithLabel({ id, value, onChange, children }) {
     const inputRef = useRef();
@@ -16,7 +17,7 @@ function InputWithLabel({ id, value, onChange, children }) {
                 value={value}
                 onChange={onChange}
                 ref={inputRef}
-                className="w-[400px] p-1 rounded-sm bg-gray-100 border border-gray-300"
+                className={`${styles.input}`}
             />
         </div>
     )

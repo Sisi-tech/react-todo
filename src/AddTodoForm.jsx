@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import InputWithLabel from './InputWithLabel';
+import styles from './TodoListItem.module.css';
 
 const AddTodoForm = ({ onAddTodo }) => {
     const [todoTitle, setTodoTitle] = useState("");
@@ -18,7 +19,7 @@ const AddTodoForm = ({ onAddTodo }) => {
         setDueDate("");
     }
     return (
-        <form onSubmit={handleAddTodo} className="flex flex-col gap-4 bg-cyan-50 w-[70%] p-10 justify-center items-center shadow-md rounded-md">
+        <form onSubmit={handleAddTodo} className="flex flex-col gap-4 bg-cyan-50 w-100%] p-10 justify-center items-center shadow-md rounded-md">
             <InputWithLabel 
                 id="todoTitle"
                 value={todoTitle}
@@ -40,7 +41,7 @@ const AddTodoForm = ({ onAddTodo }) => {
             >
                 Due
             </InputWithLabel>
-            <button type="submit" className="bg-gray-100 p-1 pl-4 pr-4 rounded-full hover:bg-gray-300">
+            <button type="submit" className={`${styles.button}`}>
                 Add
             </button>
         </form>
